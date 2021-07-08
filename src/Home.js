@@ -4,11 +4,11 @@ import debounce from 'lodash.debounce';
 
 function Home(){
     const [query, setQuery] = useState("calm");
-    const [dbValue, saveToDb] = useState('');
+    // const [dbValue, saveToDb] = useState('');
     const [pics, setPics] = useState("https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?ixid=MnwyNDUwMzh8MHwxfHNlYXJjaHwzfHxjYWxtfGVufDB8fHx8MTYyNTY3ODQ5MA&ixlib=rb-1.2.1");
     var number = 1;
     const debouncedSave = useCallback(
-		debounce(nextValue => saveToDb(nextValue), 1000),
+		debounce(nextValue => fetchQuery(nextValue, number), 2000),
 		[], // will be created only once initially
 	);
 
@@ -19,10 +19,12 @@ function Home(){
 		// it references the same debouncedSave that was created initially
 		debouncedSave(nextValue);
         fetchQuery(query, number);
-        number++;
+        
     };
 
     const fetchQuery = function(query, page = 1){
+        number++;
+        number = number % 100;
         fetch(`https://api.unsplash.com/search/photos?page=${page}&per_page=1&query=${query}&client_id=dI5dfzVEG3qziDy_Acn1ui9QT77i2tCWAoPgoldB0-Y`)
         .then(response => {
             if (response.ok) {
@@ -74,6 +76,8 @@ const div_style = {
     margin: 20,
     padding: 20,
     borderRadius: 20,
+    x: '50%',
+    y: '50%',
     // width: 250,
     // height: 100,
     // backgroundColor: '#fafafa',
