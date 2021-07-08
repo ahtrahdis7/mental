@@ -4,11 +4,11 @@ import debounce from 'lodash.debounce';
 
 function Home(){
     const [query, setQuery] = useState("calm");
-    // const [dbValue, saveToDb] = useState('');
+    const [num, setNum] = useState(0);
     const [pics, setPics] = useState("https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?ixid=MnwyNDUwMzh8MHwxfHNlYXJjaHwzfHxjYWxtfGVufDB8fHx8MTYyNTY3ODQ5MA&ixlib=rb-1.2.1");
-    var number = 1;
+    // var number = 1;
     const debouncedSave = useCallback(
-		debounce(nextValue => fetchQuery(nextValue, number), 2000),
+		debounce(nextValue => fetchQuery(nextValue), 1000),
 		[], // will be created only once initially
 	);
 
@@ -18,32 +18,34 @@ function Home(){
         // Even though handleChange is created on each render and executed
 		// it references the same debouncedSave that was created initially
 		debouncedSave(nextValue);
-        fetchQuery(query, number);
+        // fetchQuery(query, number);
         
     };
 
-    const fetchQuery = function(query, page = 1){
-        number++;
-        number = number % 100;
-        fetch(`https://api.unsplash.com/search/photos?page=${page}&per_page=1&query=${query}&client_id=dI5dfzVEG3qziDy_Acn1ui9QT77i2tCWAoPgoldB0-Y`)
-        .then(response => {
-            if (response.ok) {
-                return response;
-            } else {
-                var error = new Error('Error ' + response.status + ': ' + response.statusText);
-                error.response = response;
-                throw error;
-            }
-        },error => {
-            var errmess = new Error(error.message);
-            throw errmess;
-        })
-        .then(res => res.json())
-        .then(res => {
-            if(res.results.length > 0) setPics(res.results[0].urls.raw)
-        })
+    const fetchQuery = function(query){
+        if(num > 100) setNum(0)
+        else setNum(num+1);
+
+        console.log(query, num)
+        // fetch(`https://api.unsplash.com/search/photos?page=${num}&per_page=1&query=${query}&client_id=dI5dfzVEG3qziDy_Acn1ui9QT77i2tCWAoPgoldB0-Y`)
+        // .then(response => {
+        //     if (response.ok) {
+        //         return response;
+        //     } else {
+        //         var error = new Error('Error ' + response.status + ': ' + response.statusText);
+        //         error.response = response;
+        //         throw error;
+        //     }
+        // },error => {
+        //     var errmess = new Error(error.message);
+        //     throw errmess;
+        // })
+        // .then(res => res.json())
+        // .then(res => {
+        //     if(res.results.length > 0) setPics(res.results[0].urls.raw)
+        // })
     }
-    fetchQuery(query, number);
+    // fetchQuery(query);
 
     return (
         <div>
