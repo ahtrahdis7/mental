@@ -1,12 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, useCallback } from 'react'
 import { Box, TextField } from '@material-ui/core';
+import debounce from 'lodash.debounce';
 
 function Home(){
     const [query, setQuery] = useState("calm");
+    const [dbValue, saveToDb] = useState('');
     const [pics, setPics] = useState("https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?ixid=MnwyNDUwMzh8MHwxfHNlYXJjaHwzfHxjYWxtfGVufDB8fHx8MTYyNTY3ODQ5MA&ixlib=rb-1.2.1");
     var number = 1;
+    const debouncedSave = useCallback(
+		debounce(nextValue => saveToDb(nextValue), 1000),
+		[], // will be created only once initially
+	);
+
     const handleChange = (event) => {
-        setQuery(event.target.value);
+        const { value: nextValue } = event.target;
+        setQuery(nextValue);
+        // Even though handleChange is created on each render and executed
+		// it references the same debouncedSave that was created initially
+		debouncedSave(nextValue);
         fetchQuery(query, number);
         number++;
     };
@@ -53,7 +64,9 @@ const text_style = {
     opacity: 0.8,
     width: '25ch',
     height: '1cm',
-
+    backgroundColor: 'white',
+    opacity: 0.5,
+    borderRadius: 5
 }
 
 const div_style = {
